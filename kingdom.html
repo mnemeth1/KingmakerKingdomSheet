@@ -1,0 +1,555 @@
+<html>
+<head>
+    <title>Kingdom worksheet</title>
+    <link rel="stylesheet" type="text/css" href="kingdom.css" />
+    <script language="javascript" src="jquery-1.7.2.min.js"></script>
+    <script language="javascript" src="kingdom.js"></script>
+</head>
+<body>
+
+    <div id="menu">Menu</div>
+    <div id="menuDiv">
+        <span>Switch to kingdom:</span>
+        <div id="kingdomList"></div>
+        <hr/>
+        <a href="#" id="menuNewKingdom">Create New Kingdom</a><br/>
+        <a href="#" id="menuImportExport">Import/Export Kingdom</a><br/>
+        <a href="#" id="menuHouseRules">Configure Kingdom Rules</a>
+    </div>
+    <div class="hiddenPanel" id="importExportDiv">
+        <p>Copy and paste into and out of this text area to export the current kingdom or import a new or existing kingdom</p>
+        <textarea name="importExportArea">
+        </textarea><br/>
+        <button id="importExportClose">Close</button>
+        <button id="importButton">Import above kingdom data</button>
+    </div>
+    <div id="titleDiv"></div>
+
+    <span class="topCalendar"><span class="calendar">Calendar</span><button class="calendarMinus">-</button><button class="calendarPlus">+</button></span>
+
+    <div class="hiddenPanel" id="houseRulesDiv">
+        <h3>Configure the house rules that apply to this kingdom</h3>
+        <p>Which base ruleset does this kingdom use?
+            <select id="hrRuleset">
+                <option value="RRR">Rivers Run Red</option>
+                <option value="UC">Ultimate Campaign</option>
+            </select>
+        </p>
+        <div id="hrRRROnly">
+            <p><label><input type="checkbox" id="hrMansionVilla"> Mansions and Noble Villas are considered houses.</label></p>
+        </div>
+        <div id="hrUCOnly">
+            <p><label><input type="checkbox" id="hrUnlimitedItems"> When filling magic item slots, allow generated items to exceed settlement base value.</label></p>
+        </div>
+        <p><label><input type="checkbox" id="hrSlotsBoostEconomy"> Magic item slots simply boost Economy (+1 for minor, +2 for medium, +3 for major) instead of filling with items that you roll to sell each turn.</label></p>
+        <p><label><input type="checkbox" id="hrCalculatePrice"> Building prices are calculated from their features using <a href="http://paizo.com/threads/rzs2kqjx&page=16?Kingdom-Building#767" target="_blank">the values reverse-engineered by bmcdaniel</a></label></p>
+        <button id="houseRulesClose">Close</button>
+    </div>
+
+    <h1><span id="kingdomType">Barony</span> of <span id="kingdomName"></span></h1>
+
+    <div class="summary">
+
+        <table class="blue">
+
+            <tr>
+                <th>Alignment</th>
+                <td>
+                    <select name="Alignment">
+                        <option></option>
+                        <option>Lawful Good</option>
+                        <option>Neutral Good</option>
+                        <option>Chaotic Good</option>
+                        <option>Lawful Neutral</option>
+                        <option>True Neutral</option>
+                        <option>Chaotic Neutral</option>
+                        <option>Lawful Evil</option>
+                        <option>Neutral Evil</option>
+                        <option>Chaotic Evil</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th>Size</th>
+                <td><input type="text" name="size" value="1" size="4" /></td>
+            </tr>
+
+            <tr>
+                <th>Roads</th>
+                <td><select name="roads"></select></td>
+            </tr>
+
+            <tr class="ucOnly">
+                <th>Highways</th>
+                <td><select name="highways"></select></td>
+            </tr>
+
+            <tr>
+                <th>Farms</th>
+                <td><select name="farms"></select></td>
+            </tr>
+
+            <tr>
+                <th>Unrest</th>
+                <td><input type="text" name="unrest" value="0" size="1" /> (<span class="fromKingdom UnrestRate plusNumber"></span> each month)</td>
+            </tr>
+
+            <tr>
+                <th>Treasury</th>
+                <td><input type="text" name="treasury" value="0" size="4" /> BP</td>
+            </tr>
+
+            <tr>
+                <th>Resource Income</th>
+                <td> <span class="fromKingdom IncomeBP plusNumber"></span> BP</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="edicts">
+
+        <table class="blue">
+
+            <tr>
+                <th>Control DC</th>
+                <td class="fromKingdom ControlDC"></td>
+            </tr>
+
+            <tr>
+                <th>Population</th>
+                <td><span class="fromKingdom Population number"></span> (<span class="fromKingdom City_Population number"></span> urban, <span class="fromKingdom Rural_Population number"></span> rural)</td>
+            </tr>
+
+            <tr>
+                <th>Consumption</th>
+                <td><span class="fromKingdom Consumption number"></span> <span class="fromKingdom Consumption_Actual"></span></td>
+            </tr>
+
+        </table>
+
+        <table class="blue">
+
+            <thead>
+
+                <tr>
+                    <th>Edicts</th>
+                    <th>Choice</th>
+                    <th>Economy</th>
+                    <th>Loyalty</th>
+                    <th>Stability</th>
+                    <th>Consumption</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <th>Promotions</th>
+                    <td>
+                        <select name="Promotions">
+                            <option>None</option>
+                            <option>Token</option>
+                            <option>Standard</option>
+                            <option>Aggressive</option>
+                            <option>Expansionist</option>
+                        </select>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td class="fromKingdom Edicts_Stability"></td>
+                    <td class="fromKingdom Promotions_Consumption"></td>
+                </tr>
+
+                <tr>
+                    <th>Taxation Level</th>
+                    <td>
+                        <select name="Taxation">
+                            <option>None</option>
+                            <option>Light</option>
+                            <option>Normal</option>
+                            <option>Heavy</option>
+                            <option>Overwhelming</option>
+                        </select>
+                    </td>
+                    <td class="fromKingdom Edicts_Economy"></td>
+                    <td class="fromKingdom Taxation_Loyalty"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <th>Festivals per year</th>
+                    <td>
+                        <select name="Festivals">
+                            <option>None</option>
+                            <option>1 per year</option>
+                            <option>6 per year</option>
+                            <option>12 per year</option>
+                            <option>23 per year</option>
+                        </select>
+                    </td>
+                    <td></td>
+                    <td class="fromKingdom Festivals_Loyalty"></td>
+                    <td></td>
+                    <td class="fromKingdom Festivals_Consumption"></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <table class="blue">
+
+        <tr>
+            <th>&nbsp;</th>
+            <th>Total</th>
+            <th>Buildings</th>
+            <th>Edicts</th>
+            <th>Events</th>
+            <th>Leadership</th>
+            <th>Resources</th>
+            <th>Alignment</th>
+            <th>Roads</th>
+            <th class="ucOnly">Highways</th>
+            <th>Other</th>
+            <th>Edicts</th>
+            <th>Unrest</th>
+            <th>Vacancies</th>
+            <th>Other</th>
+        </tr>
+
+        <tr>
+            <th>Economy</th>
+            <td class="fromKingdom Economy"></td>
+            <td class="fromKingdom Buildings_Economy"></td>
+            <td class="fromKingdom Edicts_Economy_Plus"></td>
+            <td class="fromKingdom Events_Economy"></td>
+            <td class="fromKingdom Leadership_Economy"></td>
+            <td class="fromKingdom Resources_Economy"></td>
+            <td class="fromKingdom Alignment_Economy"></td>
+            <td class="fromKingdom Roads_Economy"></td>
+            <td class="fromKingdom Highways_Economy ucOnly"></td>
+            <td class="fromKingdom Other_Economy_Plus"></td>
+            <td class="fromKingdom Edicts_Economy_Minus"></td>
+            <td class="fromKingdom Unrest_Economy_Minus"></td>
+            <td class="fromKingdom Vacancies_Economy_Minus"></td>
+            <td class="fromKingdom Other_Economy_Minus"></td>
+        </tr>
+
+        <tr>
+            <th>Loyalty</th>
+            <td class="fromKingdom Loyalty"></td>
+            <td class="fromKingdom Buildings_Loyalty"></td>
+            <td class="fromKingdom Edicts_Loyalty_Plus"></td>
+            <td class="fromKingdom Events_Loyalty"></td>
+            <td class="fromKingdom Leadership_Loyalty"></td>
+            <td class="fromKingdom Resources_Loyalty"></td>
+            <td class="fromKingdom Alignment_Loyalty"></td>
+            <td class="fromKingdom Roads_Loyalty"></td>
+            <td class="fromKingdom Highways_Loyalty ucOnly"></td>
+            <td class="fromKingdom Other_Loyalty_Plus"></td>
+            <td class="fromKingdom Edicts_Loyalty_Minus"></td>
+            <td class="fromKingdom Unrest_Loyalty_Minus"></td>
+            <td class="fromKingdom Vacancies_Loyalty_Minus"></td>
+            <td class="fromKingdom Other_Loyalty_Minus"></td>
+        </tr>
+
+        <tr>
+            <th>Stability</th>
+            <td class="fromKingdom Stability"></td>
+            <td class="fromKingdom Buildings_Stability"></td>
+            <td class="fromKingdom Edicts_Stability_Plus"></td>
+            <td class="fromKingdom Events_Stability"></td>
+            <td class="fromKingdom Leadership_Stability"></td>
+            <td class="fromKingdom Resources_Stability"></td>
+            <td class="fromKingdom Alignment_Stability"></td>
+            <td class="fromKingdom Roads_Stability"></td>
+            <td class="fromKingdom Highways_Stability ucOnly"></td>
+            <td class="fromKingdom Other_Stability_Plus"></td>
+            <td class="fromKingdom Edicts_Stability_Minus"></td>
+            <td class="fromKingdom Unrest_Stability_Minus"></td>
+            <td class="fromKingdom Vacancies_Stability_Minus"></td>
+            <td class="fromKingdom Other_Stability_Minus"></td>
+        </tr>
+
+    </table>
+
+    <table class="blue">
+
+        <tr>
+            <th>&nbsp;</th>
+            <th>New Cities</th>
+            <th>New Buildings</th>
+            <th>Claim Hexes (1 BP)</th>
+            <th class="rrrOnly" title="Plains and Hills 1 BP, Forests 2 BP, Swamps and Mountains 4 BP, double to cross a river without an existing bridge or ford">Build Roads (1/2/4/8 BP)</th>
+            <th class="rrrOnly" title="Plains 2 BP, Hills 4 BP">Build Farmlands (2/4 BP)</th>
+            <th class="ucOnly">Terrain Improvements</th>
+        </tr>
+
+        <tr>
+            <th>Build Limits (per month)</th>
+            <td class="fromKingdom limitCities"></td>
+            <td><span class="fromKingdom limitBuildings"></span> (+1 house)</td>
+            <td class="fromKingdom limitHexes"></td>
+            <td class="rrrOnly fromKingdom limitRoads"></td>
+            <td class="rrrOnly fromKingdom limitFarmlands"></td>
+            <td class="ucOnly fromKingdom limitTerrain"></td>
+        </tr>
+
+    </table>
+
+    <h1>Leadership Positions <span class="expando">[+]</span></h1>
+
+    <table class="blue leaders">
+
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Who</th>
+                <th>Ability</th>
+                <th>Affecting</th>
+                <th>Penalty if Vacant</th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+
+    </table>
+
+    <h1>People <span class="expando">[+]</span></h1>
+
+    <div>
+
+        <table class="blue people">
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Strength</th>
+                    <th>Dexterity</th>
+                    <th>Constitution</th>
+                    <th>Intelligence</th>
+                    <th>Wisdom</th>
+                    <th>Charisma</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+        <input type="button" value="Add person" id="addPersonButton" />
+
+    </div>
+
+    <h1>Cities <span class="expando">[+]</span></h1>
+
+    <div>
+
+        <div id="citiesDiv"></div>
+
+        <div id="buildSelect"></div>
+
+        <input type="button" value="Add new city" id="addCityButton" /> <label>Free build mode: <input type="checkbox" id="freeBuildCheckbox" /></label>
+
+    </div>
+
+    <h1>Other Resources <span class="expando">[+]</span></h1>
+
+    <div>
+
+        <table class="blue resources">
+
+            <thead>
+
+                <tr>
+                    <th>Description</th>
+                    <th>Economy</th>
+                    <th>Loyalty</th>
+                    <th>Stability</th>
+                    <th>Income (+BP)</th>
+                    <th>Consumption</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+        <input type="button" value="Add Resource" id="addResourceButton" />
+
+    </div>
+
+    <h1>Armies <span class="expando">[+]</span></h1>
+
+    <div>
+
+        <table class="blue armies">
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Creatures</th>
+                    <th>Size</th>
+                    <th>ACR</th>
+                    <th>DV</th>
+                    <th>OM</th>
+                    <th>Speed</th>
+                    <th>Consumption</th>
+                    <th>Active</th>
+                    <th>Morale</th>
+                    <th>Hitpoints</th>
+                    <th>Notes</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+        <input type="button" value="Add Army" id="addArmyButton" />
+
+    </div>
+
+        <h1>Kingdom Turn <span class="expando">[+]</span></h1>
+        <div>
+            <div>
+                <ol start="0">
+                    <li>Advance calendar month: <span class="calendar">Calendar</span>
+                        <button class="calendarMinus">-</button>
+                        <button class="calendarPlus">+</button>
+                    </li>
+                    <li>Upkeep Phase
+                        <ol type="a">
+                            <li><input type="button" value="Determine Kingdom Stability" id="turnStabilityCheck"/>
+                                <div id="turnStabilityOutput" class="output"></div>
+                            </li>
+                            <li><input type="button" value="Pay Consumption" id="payConsumptionButton"/>
+                                <div id="payConsumptionOutput" class="output"></div>
+                            </li>
+                            <li class="laboriousItemSlots"><input type="button" value="Fill Vacant Magic Item Slots" id="fillItemSlots"/>
+                                <div id="fillItemSlotsOutput" class="output"></div>
+                            </li>
+                            <li><input class="ucOnly" type="button" value="Modify Unrest" id="modifyUnrestButton"/>
+                                <div id="modifyUnrestOutput" class="output"></div>
+                                Deal With Unrest (if unrest is 11 or higher).</li>
+                        </ol>
+                    </li>
+                    <li>Improvement Phase
+                        <ol type="a">
+                            <li>Assign Leadership Roles</li>
+                            <li>Claim or Abandon Hexes (claim limit of <span class="fromKingdom limitHexes"></span> per month)
+                                <input type="button" value="Claim one hex for 1 BP" id="claimHexButton"/>
+                                <div id="claimHexOutput" class="output"></div>
+                            </li>
+                            <li><span>Improve Terrain <span class="ucOnly">(limit of <span class="fromKingdom limitTerrain"></span> per month)</span> <span class="expando">[-]</span></span>
+                                <ul>
+                                    <li>
+                                        Build roads<span class="rrrOnly"> (limit of <span class="fromKingdom limitRoads"></span> per month)</span>:
+                                        <ul>
+                                            <li>
+                                                Just roads:
+                                                <input type="button" value="plains/hills (1 BP)" name="1" class="buildRoadButton rrrOnly"/>
+                                                <input type="button" value="plains (1 BP)" name="1" class="buildRoadButton ucOnly"/>
+                                                <input type="button" value="forest (2 BP)" name="2" class="buildRoadButton"/>
+                                                <input type="button" value="hills (3 BP)" name="3" class="buildRoadButton ucOnly"/>
+                                                <input type="button" value="other terrain (4 BP)" name="4" class="buildRoadButton"/>
+                                            </li>
+                                            <li>
+                                                Plus bridge:
+                                                <input type="button" value="plains/hills with river (2 BP)" name="2" class="buildRoadButton rrrOnly"/>
+                                                <input type="button" value="plains with river (2 BP)" name="2" class="buildRoadButton ucOnly"/>
+                                                <input type="button" value="forest with river (4 BP)" name="4" class="buildRoadButton"/>
+                                                <input type="button" value="hills with river (6 BP)" name="6" class="buildRoadButton ucOnly"/>
+                                                <input type="button" value="other terrain with river (8 BP)" name="8" class="buildRoadButton"/>
+                                            </li>
+                                            <li class="ucOnly">
+                                                Upgrade to Highway:
+                                                <input type="button" value="plains (2 BP)" name="2" class="buildHighwayButton"/>
+                                                <input type="button" value="forest (4 BP)" name="4" class="buildHighwayButton"/>
+                                                <input type="button" value="hills (6 BP)" name="6" class="buildHighwayButton"/>
+                                                <input type="button" value="other terrain (8 BP)" name="8" class="buildHighwayButton"/>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        Build farms<span class="rrrOnly">  (limit of <span class="fromKingdom limitFarmlands"></span> per month)</span>:
+                                        <input type="button" value="plains (2 BP)" name="2" class="buildFarmButton"/>
+                                        <input type="button" value="hills (4 BP)" name="4" class="buildFarmButton"/>
+                                        <input type="button" value="desert (8 BP)" name="8" class="buildFarmButton ucOnly"/>
+                                    </li>
+                                    <li class="ucOnly">
+                                        Build other improvements:<br/>
+                                        <input type="button" value="Aqueduct in plains (1 BP)" data-json="{&quot;cost&quot;: 1, &quot;Loyalty&quot;: 1, &quot;Stability&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Aqueduct in forest (2 BP)" data-json="{&quot;cost&quot;: 2, &quot;Loyalty&quot;: 1, &quot;Stability&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Aqueduct in hills (3 BP)" data-json="{&quot;cost&quot;: 3, &quot;Loyalty&quot;: 1, &quot;Stability&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Aqueduct in other terrain (4 BP)" data-json="{&quot;cost&quot;: 4, &quot;Loyalty&quot;: 1, &quot;Stability&quot;: 1}" class="buildTerrainImprovement"/><br/>
+                                        <input type="button" value="Canal in plains (2 BP)" data-json="{&quot;cost&quot;: 2}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Canal in forest (4 BP)" data-json="{&quot;cost&quot;: 4}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Canal in hills (6 BP)" data-json="{&quot;cost&quot;: 6}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Canal in other terrain (8 BP)" data-json="{&quot;cost&quot;: 8}" class="buildTerrainImprovement"/><br/>
+                                        <input type="button" value="Fishery (4 BP)" data-json="{&quot;cost&quot;: 4, &quot;Consumption&quot;: -1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Fort (24 BP)" data-json="{&quot;cost&quot;: 24, &quot;Stability&quot;: 1, &quot;Unrest&quot;: -1, &quot;Consumption&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Mine (6 BP)" data-json="{&quot;cost&quot;: 6, &quot;Economy&quot;: 1, &quot;IncomeBP&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Quarry (6 BP)" data-json="{&quot;cost&quot;: 6, &quot;Stability&quot;: 1, &quot;IncomeBP&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Sawmill (3 BP)" data-json="{&quot;cost&quot;: 3, &quot;Stability&quot;: 1, &quot;IncomeBP&quot;: 1}" class="buildTerrainImprovement"/>
+                                        <input type="button" value="Watchtower (12 BP)" data-json="{&quot;cost&quot;: 12, &quot;Stability&quot;: 1, &quot;Unrest&quot;: -1}" class="buildTerrainImprovement"/>
+                                    </li>
+                                </ul>
+                                <div id="improveHexOutput" class="output"></div>
+                            </li>
+                            <li><span>Establish and Improve Cities <span class="expando">[-]</span></span>
+                                <p>Let the computer automatically build improvements in your cities:</p>
+                                <div class="indent">
+                                    List improvements you want in every district (comma-separated list of building names): <input type="text" name="improveCitiesBuildings" size="60"/><br/>
+                                    Keep treasury above: <input type="text" name="improveCitiesTreasuryLimit" size="4"/> BPs<br/>
+                                    Keep Loyalty and Stability ahead of Command DC by: <input type="text" name="improveCitiesMargin" size="4"/><br/>
+                                    Remaining builds available this month: <span class="fromKingdom limitBuildingsCurrent"></span> <span class="fromKingdom extraHouse"></span><br/>
+                                    <input type="button" value="Auto-improve cities" id="improveCitiesButton"/>
+                                    <div id="improveCitiesOutput" class="output"></div>
+                                </div>
+                            </li>
+                            <li>Recruit/improve armies</li>
+                            <li>Edicts</li>
+                        </ol>
+                    </li>
+                    <li>Income Phase
+                        <ol type="a">
+                            <li class="rrrOnly">Deposits</li>
+                            <li>Withdrawals</li>
+                            <li class="ucOnly">Deposits</li>
+                            <li class="laboriousItemSlots">Sell Valuable Items
+                                <input type="button" class="rrrOnly" value="Empty item slots with cheap items" id="emptyItemSlots"/>
+                                <input type="button" class="rrrOnly" value="Sell most valuable magic items" id="sellItemSlots"/>
+                                <div id="valuableItemOutput" class="output"></div>
+                            </li>
+                            <li><input type="button" value="Generate Income" id="generateIncomeButton"/>
+                                <div id="generateIncomeOutput" class="output"></div>
+                            </li>
+                        </ol>
+                    </li>
+                    <li>Event Phase</li>
+                </ol>
+            </div>
+        </div>
+
+</body>
+</html>
